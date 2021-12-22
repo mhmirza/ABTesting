@@ -14,9 +14,9 @@ Here are few of the assignments that I completed during the course of this class
 
 To view the data, code and response file for each, please click on the hyperlinks below. 
 
-I. [Ordinary Least Squares, Time Dummies & First-Differences](https://github.com/mhmirza/ABTesting/tree/main/Assignment%20I)
+I. [Time Dummies, Fixed Effects & First-Differences](https://github.com/mhmirza/ABTesting/tree/main/Assignment%20I)
 
-II. [Ordinary Least Squares & Propensity Score Matching](https://github.com/mhmirza/ABTesting/tree/main/Assignment%20II)
+II. [Propensity Score Matching](https://github.com/mhmirza/ABTesting/tree/main/Assignment%20II)
 
 # Final Project
 
