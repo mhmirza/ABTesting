@@ -20,10 +20,9 @@ II. [Propensity Score Matching](https://github.com/mhmirza/ABTesting/tree/main/A
 
 # Final Project
 
-Brief Description: The final project (to be updated) delves into exploratory analysis and building predictive models using the Yelp academic dataset. We will explore machine learning tasks in the context of a real-world data set using big data analysis tools. It contains the following parts:
+**Brief Description:** Using data from a [Qualtrics](https://www.qualtrics.com/) survey executed by our team in Pittsburgh, the paper explores the causal effect of including scooter rides as part of the university transportation fee on weekly scooter usage. The causal inference in this scenario is established due to the elimination of selection bias, which was achieved through random assignment of experimental subjects to the treatment and control group. Moreover, the analysis extends to explore heterogeneity in the average causal effect across groups within the sample using key barriers of distance, safety and income as moderators. To view the project data, code, output, report and presentation, please click [here](https://github.com/mhmirza/ABTesting/tree/main/Final%20Project).
 
-Part 1: Exploratory Data Analysis
-Part 2: Prediction using tree ensemble methods
-Part 3: Collaborative filtering for recommendation
-Part 4: Topic modeling for text reviews
-Part 5: Word2Vec for text reviews
+* Part 1: Experiment Design & Causal Question of Interest
+* Part 2: Survey Design & Execution
+* Part 3: Data & Analysis
+* Part 4: Recommendations
