@@ -1,6 +1,6 @@
 # ABTesting
 
-This portfolio captures the work I completed for a course, Big Data and Large Scale Computing, at Carnegie Mellon University in Fall 2021. To view my GitHub repository, please click here. The work done here involves hands-on experience with MapReduce and Apache Spark using real-world datasets. Each of the assignment below encapsulates a thorough grounding in the technologies and best practices used in Big Data Machine Learning.
+This portfolio captures the work I completed for a course, A/B Testing Design & Implementation, at Carnegie Mellon University in Fall 2021. To view my GitHub repository, please click [here](https://github.com/mhmirza/ABTesting). The work done here involves fundamentals of randomized control trials (a.k.a. A/B tests), namely what they achieve, how to design, implement and analyze their outcomes as well as their shortcomings and work arounds. The assignments and project completed below also leverage the tools that can be used to analyze data from observational studies where randomization can not be implemented.
 
 # What I hope to learn?
 
