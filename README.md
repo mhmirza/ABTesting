@@ -1,10 +1,10 @@
 # ABTesting
 
-This portfolio captures the work I completed for a course, A/B Testing Design & Implementation, at Carnegie Mellon University in Fall 2021. To view my GitHub repository, please click [here](https://github.com/mhmirza/ABTesting). The work done here involves fundamentals of randomized control trials (a.k.a. A/B tests), namely what they achieve, how to design, implement and analyze their outcomes as well as their shortcomings and work arounds. The assignments and project completed below also leverage the tools that can be used to analyze data from observational studies where randomization can not be implemented.
+This portfolio captures the work I completed for a course, **A/B Testing Design & Implementation**, at Carnegie Mellon University in Fall 2021. To view my GitHub repository, please click [here](https://github.com/mhmirza/ABTesting). The work done here involves fundamentals of randomized control trials (a.k.a. A/B tests), namely what they achieve, how to design, implement and analyze their outcomes as well as their shortcomings and work arounds. The assignments and project completed below also leverage the tools that can be used to analyze data from observational studies where randomization can not be implemented. The course uses examples with real-world datasets drawn from research performed at the Heinz College in entertainment and education.
 
 # What I hope to learn?
 
-From the course, Big Data & Large Scale Computing, I wish to garner the knowledge and practical skills to develop big data/ machine learning solutions with the state-of-the-art tools, particularly those in the Spark environment, with a focus on programming models in MLlib, GraphX, and SparkSQL.
+From the course, A/B Testing Design & Implementation, I wish to garner an understanding of causality and the appropriate language to ask and answer causal questions. In addition to the theoretical knowledge, I intend to learn how the intuition is developed for implementation using fundamental tools required to measure causal effects.
 
 # Portfolio
 
