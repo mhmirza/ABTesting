@@ -20,9 +20,10 @@ II. [Propensity Score Matching](https://github.com/mhmirza/ABTesting/tree/main/A
 
 # Final Project
 
-**Brief Description:** Using data from a [Qualtrics](https://www.qualtrics.com/) survey executed by our team in Pittsburgh, the paper explores the causal effect of including scooter rides as part of the university transportation fee on weekly scooter usage. The causal inference in this scenario is established due to the elimination of selection bias, which was achieved through random assignment of experimental subjects to the treatment and control group. Moreover, the analysis extends to explore heterogeneity in the average causal effect across groups within the sample using key barriers of distance, safety and income as moderators. To view the project data, code, output, report and presentation, please click [here](https://github.com/mhmirza/ABTesting/tree/main/Final%20Project).
+**Brief Description:** Using data from a [Qualtrics](https://www.qualtrics.com/) survey executed by our team in Pittsburgh, the paper explores the causal effect of including scooter rides as part of the university transportation fee on weekly scooter usage. The causal inference in this scenario is established due to the elimination of selection bias, which was achieved through random assignment of experimental subjects to the treatment and control group. Moreover, the analysis extends to explore heterogeneity in the average causal effect across groups within the sample using key barriers of distance, safety and income as moderators. The project consisted of the following parts: Experiment Design & Causal Question of Interest; Survey Design & Execution; Data & Analysis and Recommendations. To view details, please click on the hyperlinks below:
 
-* Part 1: Experiment Design & Causal Question of Interest
-* Part 2: Survey Design & Execution
-* Part 3: Data & Analysis
-* Part 4: Recommendations
+* [Survey data](https://github.com/mhmirza/ABTesting/blob/main/Final%20Project/Survey%20Data.csv)
+* [R Code](https://github.com/mhmirza/ABTesting/blob/main/Final%20Project/Code.Rmd)
+* [HTML Output](https://github.com/mhmirza/ABTesting/blob/main/Final%20Project/Output.html)
+* [Final Report](https://github.com/mhmirza/ABTesting/blob/main/Final%20Project/Report.pdf) 
+* [Final Presentation](https://github.com/mhmirza/ABTesting/blob/main/Final%20Project/Presentation.pptx)
