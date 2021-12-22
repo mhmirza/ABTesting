@@ -1,0 +1,214 @@
+---
+html_document: default
+author: "Mohammad Manzoor Hassan Mirza"
+date: "11/07/2021"
+output:
+  html_document:
+    theme: paper
+    highlight: tango
+    toc: true
+    toc_depth: 3
+    fig_width: 5
+    fig_height: 5
+title: "A/B Homework 2"
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo=T,warning=F)
+
+#install.packages("data.table")
+library(data.table)
+#install.packages("stargazer")
+library(stargazer)
+#install.packages("ggplot2")
+library(ggplot2)
+#install.packages("ggthemes")
+library(ggthemes)
+#install.packages("tidyverse")
+library(tidyverse)
+#install.packages("pwr")
+library(pwr)
+#install.packages("plm")
+library(plm)
+
+#clear environment
+rm(list=ls());gc()
+
+```
+
+```{r}
+
+#load data
+MyData = fread(input='HW-2.csv', verbose = F)
+
+#descriptive statistics
+length(unique(MyData$COUNTRY))
+length(unique(MyData$YEAR))
+
+#plotting x and y variables
+hist(MyData$LCOMP)
+hist(MyData$LHEXP)
+
+#exploring time trends for a country
+ggplot(MyData[COUNTRY==6],
+       aes(x=YEAR,y=LHEXP)) +
+  geom_point() + 
+  theme_bw()
+
+ggplot(MyData[COUNTRY==6],
+       aes(x=YEAR,y=LCOMP)) +
+  geom_point() + 
+  theme_bw()
+
+# exploring the correlation between X and Y variable for one country
+ggplot(MyData,
+       aes(x=LHEXP,y=LCOMP)) +
+  geom_point() + 
+  theme_bw()
+
+```
+
+```{r}
+
+#without time dummies
+plm_model <- plm(LCOMP ~ LHEXP +
+              LDALE +
+              LHC +
+              LGDPC +
+              factor(OECD) + 
+              POPDEN,
+            data = MyData,
+            index = c("COUNTRY","YEAR"),
+            model="pooling")
+
+#with time dummies
+plmtd <-plm(LCOMP ~ LHEXP +
+              factor(YEAR) +
+              LDALE +
+              LHC +
+              LGDPC +
+              factor(OECD) + 
+              POPDEN,
+            data = MyData,
+            index = c("COUNTRY","YEAR"),
+            model="pooling")
+
+#comparing both models: no time dummies, time dummies
+stargazer(plm_model, plmtd,
+          se = list(
+            sqrt(diag(vcovHC(plm_model,
+                             method="arellano",
+                             type="HC1"))),
+            sqrt(diag(vcovHC(plmtd,
+                             method="arellano",
+                             type="HC1")))),
+          title="Panel OLS",
+          type="text",
+          model.numbers=FALSE,
+          column.labels=c("no time dummies",
+                          "time dummies"),
+          omit = c("factor[(]YEAR[)]",
+                   "factor[(]OECD[)]"),
+          add.lines = list(c("OECD Dummies","Yes","Yes"),
+                           c("Year Dummies","No","Yes"),
+                           c("LDALE Control","Yes","Yes"),
+                           c("LHC Control","Yes","Yes"),
+                           c("LGDPC Control","Yes","Yes"),
+                           c("POPDEN Control","Yes","Yes")))
+
+```
+
+```{r}
+
+#using first-differences
+plmtdfd <- plm(LCOMP ~ LHEXP +
+              factor(YEAR) +
+              LDALE +
+              LHC +
+              LGDPC +
+              factor(OECD) + 
+              POPDEN,
+            data = MyData,
+            index = c("COUNTRY","YEAR"),
+            model="fd")
+
+#comparing all three models: no time dummies, time dummies, first differences w/ time dummies
+stargazer(plm_model,plmtd,plmtdfd,
+          se=list(
+            sqrt(diag(vcovHC(plm_model,
+                             method="arellano",
+                             type="HC1"))),
+            sqrt(diag(vcovHC(plmtd,
+                             method="arellano",
+                             type="HC1"))),
+            sqrt(diag(vcovHC(plmtdfd,
+                             method="arellano",
+                             type="HC1")))),
+          title="Panel OLS",
+          type="text",
+          model.numbers=FALSE,
+          column.labels=c("no time dummies",
+                          "time dummies",
+                          "first-differences"),
+          omit = c("factor[(]YEAR[)]",
+                   "factor[(]OECD[)]"),
+          add.lines = list(c("OECD Dummies","Yes","Yes","Yes"),
+                           c("Year Dummies","No","Yes","Yes"),
+                           c("LDALE Control","Yes","Yes","Yes"),
+                           c("LHC Control","Yes","Yes","Yes"),
+                           c("LGDPC Control","Yes","Yes","Yes"),
+                           c("POPDEN Control","Yes","Yes","Yes")))
+
+```
+
+```{r}
+
+#using fixed-effects
+plmtdfe <-plm(LCOMP ~ LHEXP +
+              factor(YEAR) +
+              LDALE +
+              LHC +
+              LGDPC +
+              factor(OECD) + 
+              POPDEN,
+            data = MyData,
+            index = c("COUNTRY","YEAR"),
+            model="within")
+
+#comparing all four models: no time dummies, time dummies, first differences w/ time dummies, fixed effects w/ time dummies
+
+stargazer(plm_model,plmtd,plmtdfd,plmtdfe,
+          se=list(
+            sqrt(diag(vcovHC(plm_model,
+                             method="arellano",
+                             type="HC1"))),
+            sqrt(diag(vcovHC(plmtd,
+                             method="arellano",
+                             type="HC1"))),
+            sqrt(diag(vcovHC(plmtdfd,
+                             method="arellano",
+                             type="HC1"))),
+            sqrt(diag(vcovHC(plmtdfe,
+                             method="arellano",
+                             type="HC1")))),
+          title="Panel OLS",
+          type="text",
+          model.numbers=FALSE,
+          column.labels=c("no time dummies",
+                          "time dummies",
+                          "first-differences",
+                          "fixed-effects"),
+          omit = c("factor[(]YEAR[)]",
+                   "factor[(]OECD[)]"),
+          add.lines = list(c("OECD Dummies","Yes","Yes","Yes","Yes","Yes"),
+                           c("Year Dummies","No","Yes","Yes","Yes","Yes"),
+                           c("LDALE Control","Yes","Yes","Yes","Yes","Yes"),
+                           c("LHC Control","Yes","Yes","Yes","Yes","Yes"),
+                           c("LGDPC Control","Yes","Yes","Yes","Yes","Yes"),
+                           c("POPDEN Control","Yes","Yes","Yes","Yes","Yes")))
+
+# ENDING NOTE: STANDARD ERRORS HAVE BEEN CLUSTERED FOR ALL MODELS ABOVE!
+```

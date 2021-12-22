@@ -1,0 +1,170 @@
+---
+html_document: default
+author: "Mohammad Manzoor Hassan Mirza"
+date: "11/07/2021"
+output:
+  html_document:
+    theme: paper
+    highlight: tango
+    toc: true
+    toc_depth: 3
+    fig_width: 5
+    fig_height: 5
+title: "A/B Homework 2"
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo=T,warning=F)
+
+#install.packages("data.table")
+library(data.table)
+#install.packages("stargazer")
+library(stargazer)
+#install.packages("ggplot2")
+library(ggplot2)
+#install.packages("ggthemes")
+library(ggthemes)
+#install.packages("tidyverse")
+library(tidyverse)
+#install.packages("pwr")
+library(pwr)
+#install.packages("plm")
+library(plm)
+#install.packages("AER")
+library(AER)
+#install.packages("MatchIt")
+library(MatchIt)
+
+#clear environment
+rm(list=ls());gc()
+
+```
+
+```{r}
+
+#load data, check names, plot leases, plot prices
+MyData = fread('HW-3.csv',verbose= F)
+MyData<-data.table(MyData)
+```
+
+```{r}
+# Question 1
+
+#basic regression with no control for attending catholic high school on 12th grade math scores
+ols <-lm(math12 ~ factor(catholic), data = MyData)
+
+
+#add controls for school attributes: hsgrad, math8, riskdrop8  
+ols_school <-lm(math12 ~ factor(catholic) + factor(hsgrad) + math8 + factor(riskdrop8), 
+                data = MyData)
+
+stargazer(ols,ols_school,
+          title="OLS",
+          type="text",
+          model.numbers=FALSE,
+          column.labels=c("no controls",
+                          "w/ school related controls"),
+          omit = c("factor[(]hasgrad[)]",
+                   "factor[(]disrupt8[)]"))
+
+
+#add demographic controls to ols_school regression: race, faminc8, fathed8, mothed8
+
+ols_demo <-lm(math12 ~ factor(catholic) + factor(hsgrad) + math8 + factor(riskdrop8) + factor(race) + factor(faminc8) + factor(fathed8) + factor(mothed8), MyData)
+
+stargazer(ols, ols_school, ols_demo,
+          title="OLS",
+          type="text",
+          model.numbers=FALSE,
+          column.labels=c("no controls",
+                          "w/ school related controls",
+                          "w/ school related & demographic controls"),
+          omit = c("factor[(]hsgrad[)]",
+                   "factor[(]disrupt8[)]",
+                   "factor[(]race[)]",
+                   "factor[(]faminc8[)]",
+                   "factor[(]fathed8[)]",
+                   "factor[(]mothed8[)]"))
+
+```
+
+```{r}
+# Question 2
+
+#averaging the numeric variables for each id not required here since we do not have multiple weeks for pre and post treatment
+
+
+#set a fixed seed
+set.seed(1234)
+
+
+#match treated/control on likelihood of treatment (Q: why shouldn't we include read8: L4-3, Slide 6)
+Match <- matchit(catholic ~ math8,
+                 MyData,
+                 method = 'nearest', caliper = 0.002)
+
+
+#summarize quality of matched sample
+summary(Match)
+```
+
+```{r}
+#identify matched sample
+
+MyData.match <- data.table(match.data(Match))
+Matched.ids <- MyData$id %in% MyData.match$id
+MyData[, match := Matched.ids]
+Matched.ids.sum <- MyData$id %in% MyData.match$id
+MyData[, match := Matched.ids.sum]
+```
+
+```{r}
+
+# graphs for checking balance
+
+
+
+```
+
+```{r}
+#t-tests to check whether math scores in the time period before the treatment (i.e. 8th grade) are statistically significant between the treatment and control group BEFORE and AFTER the match! 
+
+t.test(
+  MyData$math8[MyData$catholic == 0],
+  MyData$math8[MyData$catholic == 1],
+        alternative = "two.sided")
+
+```
+
+```{r}
+
+t.test(
+  MyData$math8[MyData$catholic == 0 & MyData$match == 1],
+  MyData$math8[MyData$catholic == 1 & MyData$match == 1],
+        alternative = "two.sided")
+
+```
+
+```{r}
+#OLS regression on matched sample only
+model.match <- lm(math12 ~ factor(catholic), data = MyData[match == TRUE])
+
+#model on matched sample with controls 
+model.match.controls <- lm(math12 ~ factor(catholic) + factor(hsgrad) + math8 + factor(riskdrop8) + factor(race) + factor(faminc8) + factor(fathed8) + factor(mothed8), data = MyData[match == TRUE])
+
+stargazer(model.match, model.match.controls,
+          title="Effect of attending catholic high school on math12",
+          type="text",
+          model.numbers=FALSE,
+          column.labels=c("model on matched sample",
+                          "model on matched sample w/ controls"),
+          omit = c("factor[(]hsgrad[)]",
+                   "factor[(]riskdrop8[)]",
+                   "factor[(]race[)]",
+                   "factor[(]faminc8[)]",
+                   "factor[(]fathed8[)]",
+                   "factor[(]mothed8[)]"))
+```
