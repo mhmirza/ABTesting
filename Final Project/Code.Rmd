@@ -1,0 +1,529 @@
+---
+title: "Project"
+author: "Beth Root, Alex Talbott, Anum Malik, Manzoor Mirza, Safi, Hajra Shahab"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+
+knitr::opts_chunk$set(echo=T,warning=F)
+
+#install.packages("data.table")
+library(data.table)
+#install.packages("stargazer")
+library(stargazer)
+#install.packages("ggplot2")
+library(ggplot2)
+#install.packages("ggthemes")
+library(ggthemes)
+#install.packages("tidyverse")
+library(tidyverse)
+#install.packages("pwr")
+library(pwr)
+#install.packages("plm")
+library(plm)
+#install.packages("AER")
+library(AER)
+#install.packages("MatchIt")
+library(MatchIt)
+library(ggplot2)
+#install.packages("GGally")
+library(GGally)
+
+#clear environment
+rm(list=ls());gc()
+
+```
+
+```{r}
+
+#load dataset
+scooter = fread(input='scooter_usage_final (v2).csv', verbose = F)
+questions <- scooter[1]
+
+# removing the second and third rows of question and Qualtrics ID 
+scooter <- scooter[-c(1,2)]
+
+# changing column names
+colnames(scooter) <- c("role_pitt", "univ",	"familiarity",	"experience",	"frequency",	
+                       "weekly_usage",	"use_for",	"not_ridden_primary_reason",	"challenges",
+                       "safety_rating",	"affordability",	"partnership",	"treatment_ques",
+                       "outcome_scooter_usage",	"control_ques",	"control_ques2",	"gender",	"age",	
+                       "disability", "distance", "zip_code",	"income",	"smartphone",
+                       "transportation")
+
+scooter <- scooter %>%
+  # creating control and treatment groups where NaN for treatment question implies control
+  mutate(treated = ifelse(treatment_ques == 'Yes' | treatment_ques == 'No', 1, 0),
+         # pulling out usage values for control group from the weekly_usage column
+        outcome_scooter_usage = as.numeric(ifelse(treatment_ques == "",
+                                                  weekly_usage, outcome_scooter_usage)),
+        # changing the class of variables
+        role_pitt = as.factor(role_pitt),
+        univ = as.factor(univ),
+        familiarity = as.factor(familiarity),
+        experience = as.factor(experience),
+        frequency = as.factor(frequency),
+        weekly_usage = as.numeric(weekly_usage),
+        use_for = as.factor(use_for), #has multiple selections
+        not_ridden_primary_reason = as.factor(not_ridden_primary_reason),
+        challenges = as.factor(challenges), #has multiple selections
+        safety_rating = as.factor(safety_rating),
+        affordability = as.factor(affordability),
+        partnership = as.factor(partnership),
+        control_ques = as.factor(control_ques),
+        control_ques2 = as.factor(control_ques2),
+        gender = as.factor(gender),
+        age = as.factor(age),
+        disability = as.factor(disability),
+        distance = as.factor(distance),
+        zip_code = as.factor(zip_code),
+        income = as.factor(income),
+        smartphone = as.factor(smartphone),
+        transportation = as.factor(transportation))
+
+# checking the structure of the data
+sapply(scooter, class)
+
+```
+
+```{r}
+
+# tests for j x k tables! (using as an alternative to covariate balance tables)
+
+# 1. Age
+
+# creating a long data frame
+treated.age.count <- scooter %>%
+  group_by(treated, age) %>%
+  summarise(n = n())
+
+# adding a column of marginal counts
+treated.age.count <- treated.age.count %>%
+  group_by(treated) %>%
+  mutate(totals = sum(n))
+
+# calculating confidence intervals using proportions test
+age.toplot <- treated.age.count %>%
+  group_by(treated, age) %>%
+  summarize(prop = n / totals,
+            lower = prop.test(n, totals)$conf.int[1],
+            upper = prop.test(n, totals)$conf.int[2])
+
+# construct the plot with confidence intervals for proportions
+ggplot(age.toplot, aes(x = age, y = prop, fill = as.factor(treated))) + 
+  geom_bar(position = "dodge", stat = "identity") + labs(fill = "Treated?") +
+  geom_errorbar(aes(ymin = lower, ymax = upper), 
+                width = 0.2,                     # Width of the error bars
+                position = position_dodge(0.9))
+
+# 2. Gender
+
+# creating a long data frame
+treated.gender.count <- scooter %>%
+  filter(gender != "Choose not to respond" & gender != "Other") %>%
+  group_by(treated, gender) %>%
+  summarise(n = n())
+
+# adding a column of marginal counts
+treated.gender.count <- treated.gender.count %>%
+  group_by(treated) %>%
+  mutate(totals = sum(n))
+
+# calculating confidence intervals using proportions test
+gender.toplot <- treated.gender.count %>%
+  group_by(treated, gender) %>%
+  summarize(prop = n / totals,
+            lower = prop.test(n, totals)$conf.int[1],
+            upper = prop.test(n, totals)$conf.int[2])
+
+# construct the plot with confidence intervals for proportions
+ggplot(gender.toplot, aes(x = gender, y = prop, fill = as.factor(treated))) + 
+  geom_bar(position = "dodge", stat = "identity") + labs(fill = "Treated?") +
+  geom_errorbar(aes(ymin = lower, ymax = upper), 
+                width = 0.2,                     # Width of the error bars
+                position = position_dodge(0.9))
+
+# 3. Distance
+
+# creating a long data frame
+treated.distance.count <- scooter %>%
+  group_by(treated, distance) %>%
+  summarise(n = n())
+
+# adding a column of marginal counts
+treated.distance.count <- treated.distance.count %>%
+  group_by(treated) %>%
+  mutate(totals = sum(n))
+
+# calculating confidence intervals using proportions test
+distance.toplot <- treated.distance.count %>%
+  group_by(treated, distance) %>%
+  summarize(prop = n / totals,
+            lower = prop.test(n, totals)$conf.int[1],
+            upper = prop.test(n, totals)$conf.int[2])
+
+# construct the plot with confidence intervals for proportions
+ggplot(distance.toplot, aes(x = distance, y = prop, fill = as.factor(treated))) + 
+  geom_bar(position = "dodge", stat = "identity") + labs(fill = "Treated?") +
+  geom_errorbar(aes(ymin = lower, ymax = upper), 
+                width = 0.2,                     # Width of the error bars
+                position = position_dodge(0.9))
+
+# 4. Safety
+
+# creating a long data frame
+treated.safety_rating.count <- scooter %>%
+  group_by(treated, safety_rating) %>%
+  summarise(n = n())
+
+# adding a column of marginal counts
+treated.safety_rating.count <- treated.safety_rating.count %>%
+  group_by(treated) %>%
+  mutate(totals = sum(n))
+
+# calculating confidence intervals using proportions test
+safety_rating.toplot <- treated.safety_rating.count %>%
+  group_by(treated, safety_rating) %>%
+  summarize(prop = n / totals,
+            lower = prop.test(n, totals)$conf.int[1],
+            upper = prop.test(n, totals)$conf.int[2])
+
+# construct the plot with confidence intervals for proportions
+ggplot(safety_rating.toplot, aes(x = safety_rating, y = prop, fill = as.factor(treated))) + 
+  geom_bar(position = "dodge", stat = "identity") + labs(fill = "Treated?") +
+  geom_errorbar(aes(ymin = lower, ymax = upper), 
+                width = 0.2,                     # Width of the error bars
+                position = position_dodge(0.9)) + xlab("Safety Rating")
+
+# 5. Frequency
+
+# creating a long data frame
+treated.frequency.count <- scooter %>%
+  group_by(treated, frequency) %>%
+  summarise(n = n())
+
+# adding a column of marginal counts
+treated.frequency.count <- treated.frequency.count %>%
+  group_by(treated) %>%
+  mutate(totals = sum(n))
+
+# calculating confidence intervals using proportions test
+frequency.toplot <- treated.frequency.count %>%
+  group_by(treated, frequency) %>%
+  summarize(prop = n / totals,
+            lower = prop.test(n, totals)$conf.int[1],
+            upper = prop.test(n, totals)$conf.int[2])
+
+# construct the plot with confidence intervals for proportions
+ggplot(frequency.toplot, aes(x = frequency, y = prop, fill = as.factor(treated))) + 
+  geom_bar(position = "dodge", stat = "identity") + labs(fill = "Treated?") +
+  geom_errorbar(aes(ymin = lower, ymax = upper), 
+                width = 0.2,                     # Width of the error bars
+                position = position_dodge(0.9)) + xlab("Usage Frequency") 
+ 
+```
+
+```{r}
+
+# outcome distribution in the treatment and control group 
+treated.outcome_scooter_usage <- ggplot(data = scooter, aes(x = outcome_scooter_usage, fill = as.factor (treated)))
+
+treated.outcome_scooter_usage + geom_bar() + facet_grid(. ~ treated) +
+  ylab("Frequency") +  
+  xlab("Weekly Usage") +
+  ggtitle("Usage Distribution for Treatment & Control Group") + theme(axis.text.x =
+                                                                        element_text(angle = 90,
+                                                                                     vjust = 0.5),
+                                                                      legend.position = 'none') +
+  scale_x_continuous(breaks = c(0,1,2,3,4,5,6,7,8,9))
+
+# comparing average usage in treatment and control group
+treatment.effect <- scooter %>%
+  group_by(treated) %>%
+  summarise(mean = mean (outcome_scooter_usage),
+            lower = t.test(outcome_scooter_usage)$conf.int[1],
+            upper = t.test(outcome_scooter_usage)$conf.int[2], .groups = 'keep') %>%
+  mutate(is.signif = as_factor (if_else(lower < 0 & upper > 0, 0, 1))) 
+
+ggplot(treatment.effect, aes(x = as.factor(treated), y = mean)) +
+  geom_bar(stat = "identity", position = "dodge", fill = "orange") +
+  ylab ("Average Scooter Usage") +
+  xlab ("Treatment Status") +
+  theme(axis.text.x=element_text(angle = 90, vjust = 0.5)) +
+  geom_errorbar(aes(ymin=lower, ymax = upper),
+                width = .2, position=position_dodge(0.9)) +
+  ggtitle("Average Scooter Usage for Control and Treatment Groups")
+
+```
+
+```{r}
+
+# checking if treated is correlated with any observed demographic variables!
+
+# age, gender and income as a function of treated
+a_check <-lm(age ~ treated, data = scooter)
+g_check <-lm(gender ~ treated, data = scooter)
+i_check <-lm(income ~ treated, data = scooter)
+f_check <- lm(familiarity ~ treated, data = scooter)
+e_check <- lm(experience ~ treated, data = scooter)
+
+stargazer(a_check, g_check, i_check, f_check, e_check,
+          title = "Correlation between treated and observables",
+          type = "text",
+          model.numbers = FALSE)
+
+# outcome_scooter_usage as a function of treated!
+
+# regression without any controls
+l1 <- lm(outcome_scooter_usage ~ treated, data = scooter)
+
+# regression while controlling for demographic variables to check if treated coefficient changes
+l2_controls <- lm(outcome_scooter_usage ~ treated +
+                  factor(gender) + factor(age) + factor(income), 
+                data = scooter)
+
+l3_controls <- lm (outcome_scooter_usage ~ treated +
+                     factor(familiarity) + factor(experience), 
+                   data = scooter)
+
+# output print
+stargazer(l1, l2_controls, l3_controls,
+          title = "Effect of including scooters in university transport fee",
+          type = "text",
+          model.numbers = FALSE,
+          column.labels = c("w/o controls",
+                          "w/ demographic controls",
+                          "w/ scooter familiarity controls"),
+          omit = c("factor[(]gender[)]",
+                   "factor[(]age[)]",
+                   "factor[(]income[)]",
+                   "factor[(]familiarity[)]",
+                   "factor[(]experience[)]"),
+          add.lines = list(c("Gender Control","No", "Yes", "No"),
+                           c("Age Control", "No", "Yes","No"),
+                           c("Income Control","No", "Yes", "No"),
+                           c("Familiarity Control","No","No", "Yes"),
+                           c("Experience Control","No","No", "Yes")))
+```
+
+```{r}
+
+# heterogeneous effects
+
+# grouping categories in the dataset to form sub-populations 
+scooter <- scooter %>%
+  mutate(hetero = as.factor(ifelse(distance == '< 1 mile' | distance == '1.1 - 2 miles' |
+                          distance == '2.1 - 5 miles' , "Near", "Far")),
+         hetero1 = as.factor(ifelse(safety_rating == '1: Not very safe' | 
+                                      safety_rating == '2: Minimally safe', "Unsafe", "Safe")),
+         hetero2 = as.factor(ifelse(income == '$50,000 to 74,999' | 
+                                      income == '$75,000 to 99,999' |
+                                      income == '$100,000 to 149,999' |
+                                      income == '$150,000 and greater', 
+                                    "High Income", "Low Income")))
+
+# 1. heterogeneous effects across sub-groups living near/ far from campus (effect not found)
+l3_hetero <- lm(outcome_scooter_usage ~ treated +
+                            hetero +
+                            treated:hetero, data = scooter)
+
+# 2. heterogeneous effects across sub-groups who consider scooters to be safe/unsafe (effect found)
+l4_hetero <- lm(outcome_scooter_usage ~ treated +
+                            hetero1 +
+                            treated:hetero1, data = scooter)
+
+# 3. heterogeneous effects across sub-groups with high/low income (effect not found)
+l5_hetero <- lm(outcome_scooter_usage ~ treated +
+                            hetero2 +
+                            treated:hetero2, data = scooter)
+
+# output print
+stargazer(l1, l3_hetero, l4_hetero, l5_hetero,
+          title = "Effect of including scooters in university transport fee",
+          type = "text",
+          model.numbers = FALSE,
+          column.labels = c("no controls",
+                          "heterogenous distance",
+                          "heterogenous safety",
+                          "heterogenous income"))
+
+# 1. visualizing heterogeneous effects (distance)
+hetero_effect <- scooter %>%
+  group_by(hetero, treated) %>%
+  summarise(mean = mean (outcome_scooter_usage),
+            lower = t.test(outcome_scooter_usage)$conf.int[1],
+            upper = t.test(outcome_scooter_usage)$conf.int[2], .groups = 'keep') %>%
+  mutate(is.signif = as_factor (if_else(lower < 0 & upper > 0, 0, 1))) 
+
+ggplot(hetero_effect, aes(x = hetero, y = mean, fill = as.factor(treated))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  ylab ("Average Scooter Usage") + labs(fill = "Treated?") +
+  xlab ("Distance from Campus") +
+  theme(axis.text.x=element_text(angle = 90, vjust = 0.5)) +
+  geom_errorbar(aes(ymin=lower, ymax = upper),
+                width = .2, position=position_dodge(0.9)) +
+  ggtitle("Heterogenous effects in sub-populations")
+
+# 2. visualizing heterogeneous effects (safety)
+hetero1_effect <- scooter %>%
+  group_by(hetero1, treated) %>%
+  summarise(mean = mean (outcome_scooter_usage),
+            lower = t.test(outcome_scooter_usage)$conf.int[1],
+            upper = t.test(outcome_scooter_usage)$conf.int[2], .groups = 'keep') %>%
+  mutate(is.signif = as_factor (if_else(lower < 0 & upper > 0, 0, 1))) 
+
+ggplot(hetero1_effect, aes(x = hetero1, y = mean, fill = as.factor(treated))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  ylab ("Average Scooter Usage") + labs(fill = "Treated?") +
+  xlab ("Safety Perception") +
+  theme(axis.text.x=element_text(angle = 90, vjust = 0.5)) +
+  geom_errorbar(aes(ymin=lower, ymax = upper),
+                width = .2, position=position_dodge(0.9)) +
+  ggtitle("Heterogenous effects in sub-populations")
+
+# 3. visualizing heterogeneous effects (income)
+hetero2_effect <- scooter %>%
+  group_by(hetero2, treated) %>%
+  summarise(mean = mean (outcome_scooter_usage),
+            lower = t.test(outcome_scooter_usage)$conf.int[1],
+            upper = t.test(outcome_scooter_usage)$conf.int[2], .groups = 'keep') %>%
+  mutate(is.signif = as_factor (if_else(lower < 0 & upper > 0, 0, 1))) 
+
+ggplot(hetero2_effect, aes(x = hetero2, y = mean, fill = as.factor(treated))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  ylab ("Average Scooter Usage") + labs(fill = "Treated?") +
+  xlab ("Income") +
+  theme(axis.text.x=element_text(angle = 90, vjust = 0.5)) +
+  geom_errorbar(aes(ymin=lower, ymax = upper),
+                width = .2, position=position_dodge(0.9)) +
+  ggtitle("Heterogenous effects in sub-populations")
+```
+
+```{r}
+
+# power analysis (gauging the strength of our analysis)
+
+# treatment and control group counts
+scooter_treatment <- scooter[scooter$treated == 1]
+scooter_control <- scooter[scooter$treated == 0]
+
+n1 <- nrow(scooter_treatment)
+n2 <- nrow(scooter_control)
+
+# power of analysis (assuming large effect size)
+pwrt <- pwr.t2n.test(d = 0.50,
+                     n1 = n1,
+                     n2 = n2,
+                     sig.level = 0.05,
+                     power = NULL)
+
+cat("Power of Test:", pwrt$power)
+
+# 1. power of heterogeneous effect (distance from campus: far/near) assuming large effect size
+
+# Far
+scooter_treatment_far <- scooter_treatment[hetero == "Far"]
+scooter_control_far <- scooter_control[hetero == "Far"]
+
+n1 <- nrow(scooter_treatment_far)
+n2 <- nrow(scooter_control_far)
+
+# power of analysis (assuming large effect size)
+pwrt <- pwr.t2n.test(d = 0.50,
+                     n1 = n1,
+                     n2 = n2,
+                     sig.level = 0.05,
+                     power = NULL)
+
+cat("\nPower of Heterogenous Effects for 'far' subjects:", pwrt$power)
+
+# Near
+scooter_treatment_near <- scooter_treatment[hetero == "Near"]
+scooter_control_near <- scooter_control[hetero == "Near"]
+
+n1 <- nrow(scooter_treatment_near)
+n2 <- nrow(scooter_control_near)
+
+# power of analysis (assuming large effect size)
+pwrt <- pwr.t2n.test(d = 0.50,
+                     n1 = n1,
+                     n2 = n2,
+                     sig.level = 0.05,
+                     power = NULL)
+
+cat("\nPower of Heterogenous Effects for 'near' subjects:", pwrt$power)
+
+# 2. power of heterogeneous effect (scooter safety perception: high/low) assuming large effect size
+
+# Safe
+scooter_treatment_safe <- scooter_treatment[hetero1 == "Safe"]
+scooter_control_safe <- scooter_control[hetero1 == "Safe"]
+
+n1 <- nrow(scooter_treatment_safe)
+n2 <- nrow(scooter_control_safe)
+
+# power of analysis (assuming large effect size)
+pwrt <- pwr.t2n.test(d = 0.50,
+                     n1 = n1,
+                     n2 = n2,
+                     sig.level = 0.05,
+                     power = NULL)
+
+cat("\nPower of Heterogenous Effects for 'safe' subjects:", pwrt$power)
+
+# Unsafe
+scooter_treatment_unsafe <- scooter_treatment[hetero1 == "Unsafe"]
+scooter_control_unsafe <- scooter_control[hetero1 == "Unsafe"]
+
+n1 <- nrow(scooter_treatment_unsafe)
+n2 <- nrow(scooter_control_unsafe)
+
+# power of analysis (assuming large effect size)
+pwrt <- pwr.t2n.test(d = 0.50,
+                     n1 = n1,
+                     n2 = n2,
+                     sig.level = 0.05,
+                     power = NULL)
+
+cat("\nPower of Heterogenous Effects for 'unsafe' subjects:", pwrt$power)
+
+# 3. power of heterogeneous effect (income: high/low) assuming large effect size
+
+# Low Income
+scooter_treatment_low.income <- scooter_treatment[hetero2 == "Low Income"]
+scooter_control_low.income <- scooter_control[hetero2 == "Low Income"]
+
+n1 <- nrow(scooter_treatment_low.income)
+n2 <- nrow(scooter_control_low.income)
+
+# power of analysis (assuming large effect size)
+pwrt <- pwr.t2n.test(d = 0.50,
+                     n1 = n1,
+                     n2 = n2,
+                     sig.level = 0.05,
+                     power = NULL)
+
+cat("\nPower of Heterogenous Effects for 'low income' subjects:", pwrt$power)
+
+# High Income
+scooter_treatment_high.income <- scooter_treatment[hetero2 == "High Income"]
+scooter_control_high.income <- scooter_control[hetero2 == "High Income"]
+
+n1 <- nrow(scooter_treatment_high.income)
+n2 <- nrow(scooter_control_high.income)
+
+# power of analysis (assuming large effect size)
+pwrt <- pwr.t2n.test(d = 0.50,
+                     n1 = n1,
+                     n2 = n2,
+                     sig.level = 0.05,
+                     power = NULL)
+
+cat("\nPower of Heterogenous Effects for 'high income' subjects:", pwrt$power)
+
+```
+
+
