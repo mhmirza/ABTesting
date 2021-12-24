@@ -24,6 +24,5 @@ II. [Propensity Score Matching](https://github.com/mhmirza/ABTesting/tree/main/A
 
 * [Survey data](https://github.com/mhmirza/ABTesting/blob/main/Final%20Project/Survey%20Data.csv)
 * [R Code](https://github.com/mhmirza/ABTesting/blob/main/Final%20Project/Code.Rmd)
-* [HTML Output](https://github.com/mhmirza/ABTesting/blob/main/Final%20Project/Output.html)
 * [Final Report](https://github.com/mhmirza/ABTesting/blob/main/Final%20Project/Report.pdf) 
 * [Final Presentation](https://github.com/mhmirza/ABTesting/blob/main/Final%20Project/Presentation.pptx)
