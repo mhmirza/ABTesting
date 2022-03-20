@@ -2,7 +2,7 @@
 
 # ABTesting
 
-This portfolio captures the work I completed for a course, **A/B Testing Design & Implementation**, at Carnegie Mellon University in Fall 2021. The work done here involves fundamentals of randomized control trials (a.k.a. A/B tests), namely what they achieve, how to design, implement and analyze their outcomes as well as their shortcomings and work arounds. The assignments and project completed below also leverage the tools that can be used to analyze data from observational studies where randomization can not be implemented. The course uses examples with real-world datasets drawn from research performed at the Heinz College in entertainment and education. To view my course repository on GitHub, please click [here](https://github.com/mhmirza/ABTesting).  
+This portfolio captures the work I completed for a course, **A/B Testing Design & Implementation**, at Carnegie Mellon University in Fall 2021. The work done here involves fundamentals of randomized control trials (a.k.a. A/B tests), namely what they achieve, how to design, implement and analyze their outcomes as well as their shortcomings and work arounds. The assignments and project completed below also leverage the tools that can be used to analyze data from observational studies where randomization cannot be implemented. The course uses examples with real-world datasets drawn from research performed at the Heinz College in entertainment and education. To view my course repository on GitHub, please click [here](https://github.com/mhmirza/ABTesting).  
 
 # What I hope to learn?
 
