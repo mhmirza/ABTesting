@@ -6,7 +6,7 @@ This portfolio captures the work I completed for a course, **A/B Testing Design 
 
 # Key Learnings
 
-From the course, A/B Testing Design & Implementation, I garnered an understanding of causality and the appropriate language to ask and answer causal questions. In addition to the theoretical knowledge, I learnt how the intuition is developed for implementation using fundamental tools required to measure causal effects. The following concepts have been covered in the assignments below: _Randomized Control Experiments; Time and Individual Fixed Effects; Instrumental Variables; Natural Experiments; Differences in Differences; Propensity Score Matching; Compliance in Experiments; Heterogeneous Effects; Interference in Networked Experiments._
+From the course, A/B Testing Design & Implementation, I garnered an understanding of causality and the appropriate language to ask and answer causal questions. In addition to the theoretical knowledge, I learnt how the intuition is developed for implementation of fundamental tools required to measure causal effects. The following concepts have been covered in the assignments below: _Randomized Control Experiments; Time and Individual Fixed Effects; Instrumental Variables; Natural Experiments; Differences in Differences; Propensity Score Matching; Compliance in Experiments; Heterogeneous Effects; Interference in Networked Experiments._
 
 # Portfolio
 
