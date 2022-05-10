@@ -4,9 +4,9 @@
 
 This portfolio captures the work I completed for a course, **A/B Testing Design & Implementation**, at Carnegie Mellon University in Fall 2021. The work done here involves fundamentals of randomized control trials (a.k.a. A/B tests), namely what they achieve, how to design, implement and analyze their outcomes as well as their shortcomings and work arounds. The assignments and project completed below also leverage the tools that can be used to analyze data from observational studies where randomization cannot be implemented. The course uses examples with real-world datasets drawn from research performed at the Heinz College in entertainment and education. To view my course repository on GitHub, please click [here](https://github.com/mhmirza/ABTesting).  
 
-# What I hope to learn?
+# Key Learnings
 
-From the course, A/B Testing Design & Implementation, I wish to garner an understanding of causality and the appropriate language to ask and answer causal questions. In addition to the theoretical knowledge, I intend to learn how the intuition is developed for implementation using fundamental tools required to measure causal effects. The following concepts have been covered in the assignments below: _Randomized Control Experiments; Time and Individual Fixed Effects; Instrumental Variables; Natural Experiments; Differences in Differences; Propensity Score Matching; Compliance in Experiments; Heterogeneous Effects; Interference in Networked Experiments._
+From the course, A/B Testing Design & Implementation, I garnered an understanding of causality and the appropriate language to ask and answer causal questions. In addition to the theoretical knowledge, I learnt how the intuition is developed for implementation using fundamental tools required to measure causal effects. The following concepts have been covered in the assignments below: _Randomized Control Experiments; Time and Individual Fixed Effects; Instrumental Variables; Natural Experiments; Differences in Differences; Propensity Score Matching; Compliance in Experiments; Heterogeneous Effects; Interference in Networked Experiments._
 
 # Portfolio
 
